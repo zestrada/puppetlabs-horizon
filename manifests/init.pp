@@ -18,6 +18,7 @@
 # $keystone_default_role default keystone role for new users
 # $django_debug         True/False. enable/disables debugging. defaults to false
 # $api_result_limit     max number of Swift containers/objects to display on a single page
+# $listen_ssl           True/False enable/disable https for horizon
 #
 class horizon(
   $secret_key,
