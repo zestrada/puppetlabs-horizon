@@ -88,14 +88,28 @@ class horizon(
      require => Package["$::horizon::params::package_name"],
      notify => Service["$::horizon::params::http_service"],
   }
+
   if $listen_ssl {
-    file_line { 'httpd_listen_on_bind_address_443':
-       path => $::horizon::params::httpd_listen_config_file,
-       match => '^Listen (.*):?443$',
-       line => "Listen ${bind_address}:443",
-       require => Package["$::horizon::params::package_name"],
-       notify => Service["$::horizon::params::http_service"],
+    if($::osfamily == 'Debian') {
+      class  { 'apache::mod::ssl': }
+       
+      file { '/etc/apache2/sites-enabled/default-ssl':
+         ensure => 'link',
+         target => '/etc/apache2/sites-available/default-ssl',
+      }
+
+    } else {
+
+      file_line { 'httpd_listen_on_bind_address_443':
+         path => $::horizon::params::httpd_listen_config_file,
+         match => '^Listen (.*):?443$',
+         line => "Listen ${bind_address}:443",
+         require => Package["$::horizon::params::package_name"],
+         notify => Service["$::horizon::params::http_service"],
+      }
+
     }
+
   }
 
   file_line { 'horizon root':
